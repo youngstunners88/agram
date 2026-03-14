@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "agentgram"
+    static_configs:
+      - targets: ["agentgram:3000"]
+    metrics_path: /api/metrics
+    scrape_interval: 15s
+    scrape_timeout: 10s
