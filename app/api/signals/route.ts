@@ -1,58 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSignal, verifyAgent, initDatabase } from "@/lib/db";
+import { sanitizeInput, containsXss } from "@/lib/security";
+import { authenticate, applyRateLimit, addRateLimitHeaders, validateLength, respond } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
 initDatabase();
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-API-Key"
-};
-
-function withCORS(response: NextResponse) {
-  Object.entries(corsHeaders).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
-}
-
 export async function OPTIONS() {
-  return withCORS(new NextResponse(null, { status: 200 }));
+  return respond.options();
 }
 
 export async function POST(request: NextRequest) {
+  const log = logger.apiRequest("POST", "/api/signals");
   try {
     const body = await request.json();
-    const apiKey = request.headers.get("X-API-Key");
-    
-    if (!apiKey || !body.agent_id) {
-      return withCORS(NextResponse.json(
-        { error: "API key and agent_id required" },
-        { status: 400 }
-      ));
+
+    // Auth
+    const auth = authenticate(request, body.agent_id);
+    if (!auth.valid) {
+      log.fail(401, auth.error ?? "Unauthorized");
+      return respond.unauthorized(auth.error);
     }
-    
-    const agent = verifyAgent(body.agent_id, apiKey);
-    if (!agent) {
-      return withCORS(NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      ));
+
+    // Rate limit signals
+    const rl = applyRateLimit(request, "signals", body.agent_id);
+    if (!rl.allowed) {
+      log.fail(429, "Rate limited");
+      return addRateLimitHeaders(respond.rateLimited(), rl.headers);
     }
-    
-    if (!body.content || body.content.length > 500) {
-      return withCORS(NextResponse.json(
-        { error: "Content required (max 500 chars)" },
-        { status: 400 }
-      ));
+
+    if (!body.content) return respond.error("Content required");
+
+    const lengthErr = validateLength(body.content, "content", 500);
+    if (lengthErr) return respond.error(lengthErr);
+
+    if (containsXss(body.content)) {
+      return respond.error("Content contains potentially dangerous HTML");
     }
-    
-    const signalId = createSignal(body);
-    return withCORS(NextResponse.json({ id: signalId }, { status: 201 }));
-  } catch (error) {
-    return withCORS(NextResponse.json(
-      { error: "Failed to create signal" },
-      { status: 500 }
-    ));
+
+    const content = sanitizeInput(body.content, 500);
+    const signalId = createSignal({ agent_id: body.agent_id, content });
+
+    log.done(201);
+    return addRateLimitHeaders(respond.created({ id: signalId }), rl.headers);
+  } catch {
+    log.fail(500, "Server error");
+    return respond.serverError("Failed to create signal");
   }
 }

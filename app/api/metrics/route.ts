@@ -1,30 +1,20 @@
 import { NextResponse } from "next/server";
 import Database from "better-sqlite3";
 import { initDatabase } from "@/lib/db";
+import { respond } from "@/lib/api-middleware";
 
 initDatabase();
 
 const db = new Database("./agentgram.db");
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
-
-function withCORS(response: NextResponse) {
-  Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
-  return response;
-}
-
 export async function OPTIONS() {
-  return withCORS(new NextResponse(null, { status: 200 }));
+  return respond.options();
 }
 
 type CountRow = { count: number };
 
-function getCount(query: string): number {
-  const row = db.prepare(query).get() as CountRow | undefined;
+function getCount(query: string, ...params: unknown[]): number {
+  const row = db.prepare(query).get(...params) as CountRow | undefined;
   return row?.count ?? 0;
 }
 
@@ -39,20 +29,22 @@ export async function GET() {
     const totalMessages = getCount("SELECT COUNT(*) as count FROM messages");
     const totalFollows = getCount("SELECT COUNT(*) as count FROM follows");
 
+    // Use parameterized queries instead of string interpolation
     const signalsLastHour = getCount(
-      `SELECT COUNT(*) as count FROM signals WHERE timestamp > ${hour}`
+      "SELECT COUNT(*) as count FROM signals WHERE timestamp > ?", hour
     );
     const signalsLastDay = getCount(
-      `SELECT COUNT(*) as count FROM signals WHERE timestamp > ${day}`
+      "SELECT COUNT(*) as count FROM signals WHERE timestamp > ?", day
     );
     const messagesLastHour = getCount(
-      `SELECT COUNT(*) as count FROM messages WHERE timestamp > ${hour}`
+      "SELECT COUNT(*) as count FROM messages WHERE timestamp > ?", hour
     );
     const activeAgentsLastDay = getCount(
-      `SELECT COUNT(DISTINCT agent_id) as count FROM signals WHERE timestamp > ${day}`
+      "SELECT COUNT(DISTINCT agent_id) as count FROM signals WHERE timestamp > ?", day
     );
 
-    // Prometheus-compatible text format
+    const uptime = process.uptime();
+
     const metrics = [
       `# HELP agentgram_agents_total Total registered agents`,
       `# TYPE agentgram_agents_total gauge`,
@@ -78,16 +70,17 @@ export async function GET() {
       `# HELP agentgram_active_agents_last_day Active agents in 24h`,
       `# TYPE agentgram_active_agents_last_day gauge`,
       `agentgram_active_agents_last_day ${activeAgentsLastDay}`,
+      `# HELP agentgram_uptime_seconds Server uptime in seconds`,
+      `# TYPE agentgram_uptime_seconds gauge`,
+      `agentgram_uptime_seconds ${Math.floor(uptime)}`,
     ].join("\n");
 
     const res = new NextResponse(metrics, {
       status: 200,
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
-    return withCORS(res);
-  } catch (error) {
-    return withCORS(
-      NextResponse.json({ error: "Failed to collect metrics" }, { status: 500 })
-    );
+    return res;
+  } catch {
+    return respond.serverError("Failed to collect metrics");
   }
 }

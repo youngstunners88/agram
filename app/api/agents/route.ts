@@ -1,83 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAgent, getAgent, initDatabase } from "@/lib/db";
+import { createAgent, getAgent, verifyAgent, initDatabase } from "@/lib/db";
+import { sanitizeInput, containsXss } from "@/lib/security";
+import { applyRateLimit, addRateLimitHeaders, validateLength, respond } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
 initDatabase();
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
-};
-
 export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+  return respond.options();
 }
 
 export async function POST(request: NextRequest) {
+  const log = logger.apiRequest("POST", "/api/agents");
   try {
+    // Rate limit agent creation
+    const rl = applyRateLimit(request, "agents");
+    if (!rl.allowed) {
+      log.fail(429, "Rate limited");
+      return addRateLimitHeaders(respond.rateLimited(), rl.headers);
+    }
+
     const body = await request.json();
-    
+
     if (!body.name || !body.purpose) {
-      return NextResponse.json(
-        { error: "Name and purpose required" },
-        { status: 400, headers: corsHeaders }
-      );
+      log.fail(400, "Missing fields");
+      return respond.error("Name and purpose required");
     }
-    
-    // Name length validation
-    if (body.name.length > 50) {
-      return NextResponse.json(
-        { error: "Name must be under 50 characters" },
-        { status: 400, headers: corsHeaders }
-      );
+
+    // Validate lengths
+    const nameErr = validateLength(body.name, "name", 50);
+    if (nameErr) return respond.error(nameErr);
+    const purposeErr = validateLength(body.purpose, "purpose", 200);
+    if (purposeErr) return respond.error(purposeErr);
+
+    // XSS check
+    if (containsXss(body.name) || containsXss(body.purpose)) {
+      log.fail(400, "XSS detected");
+      return respond.error("Input contains potentially dangerous content");
     }
-    
-    const result = createAgent(body);
-    return NextResponse.json(result, { status: 201, headers: corsHeaders });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to create agent" },
-      { status: 500, headers: corsHeaders }
-    );
+
+    const name = sanitizeInput(body.name, 50);
+    const purpose = sanitizeInput(body.purpose, 200);
+    const result = createAgent({ name, purpose, api_endpoint: body.api_endpoint });
+
+    log.done(201);
+    return addRateLimitHeaders(respond.created(result), rl.headers);
+  } catch {
+    log.fail(500, "Server error");
+    return respond.serverError("Failed to create agent");
   }
 }
 
 export async function GET(request: NextRequest) {
+  const log = logger.apiRequest("GET", "/api/agents");
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    
-    if (!id) {
-      return NextResponse.json({ error: "ID required" }, { status: 400, headers: corsHeaders });
-    }
-    
-    // Check API key for sensitive operations
+    const id = request.nextUrl.searchParams.get("id");
+    if (!id) return respond.error("ID required");
+
     const apiKey = request.headers.get("X-API-Key");
     if (!apiKey) {
-      return NextResponse.json(
-        { error: "Unauthorized - Valid API key required" },
-        { status: 401, headers: corsHeaders }
-      );
+      log.fail(401, "No API key");
+      return respond.unauthorized("Valid API key required");
     }
-    
+
     const agent = getAgent(id);
-    if (!agent) {
-      return NextResponse.json({ error: "Agent not found" }, { status: 404, headers: corsHeaders });
-    }
-    
-    // Verify API key matches
+    if (!agent) return respond.notFound("Agent not found");
+
     if (agent.api_key !== apiKey) {
-      return NextResponse.json(
-        { error: "Invalid API key" },
-        { status: 403, headers: corsHeaders }
-      );
+      log.fail(403, "Key mismatch");
+      return respond.error("Invalid API key", 403);
     }
-    
-    return NextResponse.json(agent, { headers: corsHeaders });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch agent" },
-      { status: 500, headers: corsHeaders }
-    );
+
+    log.done(200);
+    return respond.success(agent);
+  } catch {
+    log.fail(500, "Server error");
+    return respond.serverError("Failed to fetch agent");
   }
 }

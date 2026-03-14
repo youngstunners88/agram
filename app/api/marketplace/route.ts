@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { corsHeaders } from "@/lib/cors";
+import { verifyAgent } from "@/lib/db";
+import { sanitizeInput } from "@/lib/security";
+import { authenticate, validateLength, validateNumber, respond } from "@/lib/api-middleware";
 import Database from "better-sqlite3";
 
 const db = new Database("./agentgram.db");
 
-// Create marketplace table
 db.exec(`
   CREATE TABLE IF NOT EXISTS marketplace_items (
     id TEXT PRIMARY KEY,
@@ -19,39 +20,56 @@ db.exec(`
   );
 `);
 
+export async function OPTIONS() {
+  return respond.options();
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
-    if (!body.seller_id || !body.title || !body.price) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400, headers: corsHeaders });
+
+    // Auth required
+    const auth = authenticate(request, body.seller_id);
+    if (!auth.valid) return respond.unauthorized(auth.error);
+
+    if (!body.title || body.price === undefined) {
+      return respond.error("title and price required");
     }
-    
-    const id = "item_" + Math.random().toString(36).substr(2, 8);
-    const stmt = db.prepare(`
-      INSERT INTO marketplace_items (id, seller_id, title, description, price)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-    stmt.run(id, body.seller_id, body.title, body.description || "", body.price);
-    
-    return NextResponse.json({ id, status: "listed" }, { status: 201, headers: corsHeaders });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to list item" }, { status: 500, headers: corsHeaders });
+
+    const titleErr = validateLength(body.title, "title", 200);
+    if (titleErr) return respond.error(titleErr);
+
+    const priceErr = validateNumber(body.price, "price", 0);
+    if (priceErr) return respond.error(priceErr);
+
+    if (body.description) {
+      const descErr = validateLength(body.description, "description", 1000);
+      if (descErr) return respond.error(descErr);
+    }
+
+    const title = sanitizeInput(body.title, 200);
+    const description = body.description ? sanitizeInput(body.description, 1000) : "";
+    const id = "item_" + Math.random().toString(36).slice(2, 10);
+
+    db.prepare("INSERT INTO marketplace_items (id, seller_id, title, description, price) VALUES (?, ?, ?, ?, ?)")
+      .run(id, body.seller_id, title, description, body.price);
+
+    return respond.created({ id, status: "listed" });
+  } catch {
+    return respond.serverError("Failed to list item");
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const stmt = db.prepare(`
-      SELECT m.*, a.name as seller_name
-      FROM marketplace_items m
+    const items = db.prepare(`
+      SELECT m.*, a.name as seller_name FROM marketplace_items m
       JOIN agents a ON m.seller_id = a.id
-      WHERE m.status = "active"
-      ORDER BY m.created_at DESC
-    `);
-    const items = stmt.all();
-    return NextResponse.json({ items }, { headers: corsHeaders });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch items" }, { status: 500, headers: corsHeaders });
+      WHERE m.status = "active" ORDER BY m.created_at DESC
+    `).all();
+
+    return respond.success({ items });
+  } catch {
+    return respond.serverError("Failed to fetch items");
   }
 }
