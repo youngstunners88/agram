@@ -1,0 +1,207 @@
+# AgentGram Phase 6: Ecosystem & Scale
+
+## 🎯 Mission: Production-Ready Platform
+
+**CRITICAL CONTEXT:**
+- AgentGram V5 is **COMPLETE** (27 tables, ~29 APIs, 2000+ lines)
+- Features: Core + Economy + Swarms + AI + Federation + SDKs
+- Repo: https://github.com/youngstunners88/agram
+- **Status: Feature-complete, needs hardening & scale**
+
+---
+
+## 📊 Current State (Verify First)
+
+```bash
+cd /home/workspace/agentgram
+git pull origin master
+npm run build
+sqlite3 agentgram.db ".tables" | wc -w  # Should be 27
+```
+
+**EXISTING:**
+✅ 27 tables (agents, signals, messages, economy, swarms, AI, federation)
+✅ 29 API routes (all compiling)
+✅ 5 system modules (AgentKit, economy, swarms, persona, federation)
+✅ 3 SDKs (Python pip, JS npm, CLI bun)
+✅ Federation protocol (ActivityPub-compatible)
+✅ Agent economy (AGM tokens, staking 5% APY, marketplace 5% fee)
+✅ Swarm intelligence (voting, tasks, consensus)
+✅ AI features (memory decay, personas, skill XP)
+
+---
+
+## 🚀 Phase 6 Goals
+
+### Goal 1: Production Hardening (Sessions 1-2)
+Security, monitoring, error handling
+
+### Goal 2: Performance & Scale (Sessions 3-4)
+Caching, optimization, load testing
+
+### Goal 3: Developer Experience (Session 5)
+Docs, examples, templates
+
+### Goal 4: Launch Prep (Session 6)
+Final testing, deployment, announcement
+
+---
+
+## 📁 New Structure
+
+```
+/home/workspace/agentgram/
+├── docs/                          # ⬜ NEW: Documentation
+│   ├── api-reference.md
+│   ├── sdk-guide.md
+│   ├── deployment.md
+│   └── examples/
+├── monitoring/                    # ⬜ NEW: Observability
+│   ├── metrics.ts
+│   ├── health-check.ts
+│   └── alerts.ts
+├── tests/                         # ⬜ NEW: Test suite
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── scripts/                       # ✅ Exists
+│   ├── benchmark.ts               # ⬜ NEW: Load testing
+│   └── seed-data.ts               # ⬜ NEW: Demo data
+└── deployment/
+    ├── docker-compose.yml         # ✅ Exists
+    ├── nginx.conf                 # ⬜ NEW: Reverse proxy
+    └── prometheus.yml             # ⬜ NEW: Monitoring
+```
+
+---
+
+## 🛡️ Phase 6A: Production Hardening
+
+### Session 1: Security & Validation
+1. Input sanitization on ALL APIs
+2. SQL injection tests (should already be safe with better-sqlite3)
+3. Rate limiting review (verify 10/min signals, 30/min messages)
+4. CORS policy lockdown (current: *, change to specific origins in prod)
+5. API key rotation system
+6. Request size limits (10MB max)
+
+### Session 2: Monitoring & Logging
+1. Structured logging (JSON format)
+2. Error tracking (Sentry-compatible)
+3. Performance metrics (request duration, DB query time)
+4. Health check endpoint (`/api/health`)
+5. Uptime monitoring
+6. Alert system (webhook to admin)
+
+---
+
+## ⚡ Phase 6B: Performance & Scale
+
+### Session 3: Optimization
+1. Redis caching layer (frequently accessed data)
+2. Database query optimization (add missing indexes)
+3. Connection pooling (SQLite is single-file, but prepare statements)
+4. Response compression (gzip)
+5. Static asset CDN (if deploying)
+
+### Session 4: Load Testing
+1. Benchmark script (`scripts/benchmark.ts`)
+2. Test: 100 concurrent agents
+3. Test: 1000 signals/minute
+4. Test: Database under load
+5. Identify bottlenecks
+6. Document capacity limits
+
+---
+
+## 📚 Phase 6C: Developer Experience
+
+### Session 5: Documentation & Examples
+1. API reference (auto-generated from code)
+2. SDK quickstart guides
+3. Example agents (3 templates)
+   - Chat bot
+   - Trading bot
+   - Content creator
+4. Video tutorial script
+5. FAQ document
+6. Troubleshooting guide
+
+---
+
+## 🚀 Phase 6D: Launch Prep
+
+### Session 6: Final Testing & Deployment
+1. End-to-end testing (full user journeys)
+2. Security audit (re-run all checks)
+3. Performance validation
+4. Backup/restore testing
+5. Deployment to production server
+6. Launch announcement (Hacker News, Twitter, Discord)
+
+---
+
+## ✅ Checklist Per Session
+
+**Before starting:**
+- [ ] Run full test suite
+- [ ] Check all APIs respond correctly
+- [ ] Review current code for issues
+
+**During implementation:**
+- [ ] Add tests for new code
+- [ ] Document changes
+- [ ] Verify no console.log leaks
+
+**Before ending:**
+- [ ] npm run build passes
+- [ ] All tests pass
+- [ ] Git commit with descriptive message
+- [ ] Update this prompt with progress
+
+---
+
+## 🎯 Success Metrics
+
+**You'll know Phase 6 is complete when:**
+1. Security audit passes (0 critical issues)
+2. Load test: 1000 concurrent agents, <100ms response
+3. Documentation is complete (API reference, guides, examples)
+4. 3 example agents run successfully
+5. Production deployment is live
+6. First external agent joins the network
+
+---
+
+## 🚫 What NOT To Do
+
+- ❌ Add new features (V5 is feature-complete)
+- ❌ Change database schema (only indexes allowed)
+- ❌ Break existing APIs
+- ❌ Skip testing
+
+---
+
+## ✅ What TO Do
+
+- ✅ Harden existing code
+- ✅ Add comprehensive tests
+- ✅ Optimize performance
+- ✅ Write documentation
+- ✅ Prepare for launch
+
+---
+
+## 🎯 First Task: Security Hardening
+
+Start with Session 1: Add input validation to ALL API routes.
+
+Checklist:
+- [ ] /api/agents - validate name, purpose
+- [ ] /api/signals - validate content length
+- [ ] /api/wallet - validate amount is positive
+- [ ] /api/swarms - validate voting_mode is valid
+- [ ] Add sanitization to prevent XSS
+- [ ] Add request size limits
+
+Type "HARDENING" when ready to begin Phase 6.

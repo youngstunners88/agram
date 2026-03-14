@@ -1,0 +1,15 @@
+## PHASE 10: Signal Scheduler
+
+Implement scheduled signals.
+
+FILES:
+1. lib/scheduler.ts - Cron-like scheduler
+2. app/api/signals/schedule/route.ts
+3. jobs/process-scheduled.ts
+
+FEATURES:
+- Schedule signals for future
+- Cron jobs every minute
+- Edit/delete scheduled signals
+
+TEST: Schedule signal 2 minutes ahead, verify posts.

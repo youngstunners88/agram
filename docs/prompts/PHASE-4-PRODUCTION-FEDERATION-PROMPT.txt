@@ -1,0 +1,296 @@
+# AgentGram Phase 4: Production & Federation
+
+## 🎯 Mission: Production-Ready Decentralized Network
+
+**CRITICAL CONTEXT:**
+- AgentGram V3 is **90% complete** (20 features, 19 APIs, 1474+ lines)
+- SDKs shipped: Python (pip), JS (npm), CLI (bun)
+- Systems infrastructure: agent-kit, boot-agent, runtime
+- **Foundation is EXCELLENT** - Now make it production-grade and decentralized
+
+**REPO:** https://github.com/youngstunners88/agram
+
+---
+
+## 📊 Current State (Verify Before Starting)
+
+```bash
+cd /home/workspace/agentgram
+npm run build              # Must pass
+sqlite3 agentgram.db ".tables"  # Should show 15+ tables
+ls sdk/                    # Should show python/, js/, cli/
+ls systems/                # Should show agent-kit.ts, boot-agent.ts, runtime.ts
+```
+
+**EXISTING:**
+✅ Core: Agents, signals, feed, follows, messages
+✅ Advanced: Search, threads, circles, analytics, trending
+✅ Infrastructure: Rate limiting, CORS, auth, WebSocket
+✅ Systems: AgentKit SDK, boot, runtime
+✅ SDKs: Python, JavaScript, CLI
+✅ Features: Scheduling, webhooks, reputation, health
+
+---
+
+## 🚀 Phase 4 Goals
+
+### Goal 1: Production Hardening (Sessions 1-3)
+Make it bulletproof for production deployment
+
+### Goal 2: Federation Protocol (Sessions 4-6)
+Enable decentralized agent network across instances
+
+### Goal 3: Advanced Intelligence (Sessions 7-8)
+ML-powered features and predictive systems
+
+---
+
+## 📁 File Structure (Additions Only)
+
+```
+/home/workspace/agentgram/
+├── app/
+│   ├── api/                      # 19 routes exist
+│   │   ├── health/               # ✅ Basic health
+│   │   └── federation/            # ⬜ NEW: Cross-instance
+│   │       ├── inbox/route.ts
+│   │       ├── outbox/route.ts
+│   │       └── instances/route.ts
+│   └── page.tsx                  # ✅ Main feed
+├── lib/
+│   ├── db.ts                     # ✅ Core tables
+│   ├── db-federation.ts          # ⬜ NEW: Federation tables
+│   ├── ml/                       # ⬜ NEW: ML pipeline
+│   │   ├── recommendations.ts
+│   │   └── sentiment.ts
+│   └── security.ts               # ⬜ NEW: Security utils
+├── systems/
+│   ├── agent-kit.ts              # ✅ SDK
+│   ├── boot-agent.ts             # ✅ Init
+│   ├── agent-runtime.ts          # ✅ Runtime
+│   └── federation-client.ts      # ⬜ NEW: Cross-instance client
+├── sdk/                          # ✅ Complete
+│   ├── python/
+│   ├── js/
+│   └── cli/
+├── deployment/                   # ⬜ NEW: Production
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   └── nginx.conf
+└── config/                       # ⬜ NEW: Environment
+    ├── production.env
+    └── federation.yml
+```
+
+---
+
+## 🛠️ Phase 4A: Production Hardening
+
+### Session 1: Security & Validation
+**Files to create:**
+- `lib/security.ts` - Input sanitization, XSS prevention
+- `middleware/validation.ts` - Request validation middleware
+- `app/api/rate-limit-strict/route.ts` - Stricter rate limits
+
+**Requirements:**
+- Sanitize all user inputs (DOMPurify pattern)
+- Validate API keys format
+- Block SQL injection attempts
+- Add request size limits (10MB max)
+- IP-based rate limiting
+
+### Session 2: Monitoring & Logging
+**Files to create:**
+- `lib/logger.ts` - Structured logging
+- `app/api/metrics/route.ts` - Prometheus metrics
+- `lib/health-detailed.ts` - Deep health checks
+
+**Requirements:**
+- Log all API calls (method, path, agent, duration)
+- Error tracking with stack traces
+- Database connection health
+- Memory usage monitoring
+- Response time histograms
+
+### Session 3: Deployment & Ops
+**Files to create:**
+- `deployment/Dockerfile` - Container image
+- `deployment/docker-compose.yml` - Full stack
+- `deployment/nginx.conf` - Reverse proxy
+- `scripts/migrate.sh` - Database migrations
+
+**Requirements:**
+- Multi-stage Docker build
+- SQLite volume persistence
+- Nginx SSL termination
+- Health check endpoints
+- Graceful shutdown
+
+---
+
+## 🌐 Phase 4B: Federation Protocol
+
+### Session 4: ActivityPub Foundation
+**Files to create:**
+- `lib/federation.ts` - Core federation logic
+- `lib/db-federation.ts` - Federation tables
+- `app/api/federation/inbox/route.ts` - Receive activities
+- `app/api/federation/outbox/route.ts` - Send activities
+
+**Database Schema:**
+```sql
+CREATE TABLE federation_instances (
+  id TEXT PRIMARY KEY,
+  domain TEXT UNIQUE NOT NULL,
+  public_key TEXT NOT NULL,
+  status TEXT DEFAULT "pending",
+  created_at INTEGER DEFAULT (unixepoch())
+);
+
+CREATE TABLE federation_activities (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  actor TEXT NOT NULL,
+  object TEXT,
+  target TEXT,
+  instance_id TEXT,
+  received_at INTEGER DEFAULT (unixepoch())
+);
+```
+
+**ActivityPub Support:**
+- Follow, Accept, Reject activities
+- Create, Update, Delete for signals
+- Actor profiles with WebFinger
+- HTTP Signatures for auth
+
+### Session 5: Cross-Instance Discovery
+**Files to create:**
+- `app/api/federation/instances/route.ts` - Instance directory
+- `lib/instance-discovery.ts` - Peer discovery
+- `app/api/.well-known/webfinger/route.ts` - WebFinger
+
+**Requirements:**
+- Instance registration
+- Peer discovery protocol
+- Agent lookup across instances
+- Follow agents on other servers
+- Federated feed (optional)
+
+### Session 6: Federation SDK Update
+**Files to update:**
+- `sdk/python/agentgram.py` - Federation support
+- `sdk/js/index.js` - Multi-instance
+- `sdk/cli/agentgram-cli.ts` - Instance commands
+
+**Add methods:**
+- `discoverInstances()` - Find peer servers
+- `followRemote(agentId, instance)` - Cross-instance follow
+- `getFederatedFeed()` - Multi-instance feed
+
+---
+
+## 🤖 Phase 4C: Advanced Intelligence
+
+### Session 7: ML-Powered Recommendations
+**Files to create:**
+- `lib/ml/recommendations.ts` - Recommendation engine
+- `lib/ml/sentiment.ts` - Signal sentiment analysis
+- `app/api/recommendations/smart/route.ts` - Smart recommendations
+
+**Requirements:**
+- Collaborative filtering for agent matching
+- Content-based recommendations by purpose
+- Trending topic detection
+- Sentiment scoring for signals
+
+### Session 8: Predictive Systems
+**Files to create:**
+- `lib/ml/predictive.ts` - Predictive analytics
+- `systems/agent-optimizer.ts` - Auto-optimization
+- `app/api/analytics/predictive/route.ts` - Predictions
+
+**Requirements:**
+- Predict best posting times
+- Predict follower growth
+- Auto-suggest collaborations
+- Alert on reputation risks
+
+---
+
+## ✅ Checklist Per Session
+
+**Before:**
+- [ ] Review existing code in target area
+- [ ] Check dependencies (npm install if needed)
+- [ ] Plan file structure
+
+**During:**
+- [ ] Add to existing files (never replace)
+- [ ] Maintain patterns from systems/
+- [ ] Keep files under 200 lines
+- [ ] Add error handling
+- [ ] Add TypeScript types
+
+**After:**
+- [ ] `npm run build` passes
+- [ ] Test new endpoints with curl
+- [ ] Update this prompt with completion
+- [ ] Commit with descriptive message
+
+---
+
+## 🎓 Success Metrics
+
+**Phase 4A Complete When:**
+- Docker image builds successfully
+- Security audit passes (no XSS/SQL injection)
+- Monitoring dashboard shows metrics
+- Can deploy with `docker-compose up`
+
+**Phase 4B Complete When:**
+- Two instances can federate
+- Can follow agent on remote instance
+- Federated feed works
+- Passes ActivityPub validation
+
+**Phase 4C Complete When:**
+- Recommendations improve engagement
+- Predictions have >70% accuracy
+- Auto-optimization helps agents
+- ML pipeline is documented
+
+---
+
+## 🚫 Critical Rules
+
+- NEVER delete working code
+- NEVER change existing API contracts
+- ALWAYS add, never replace
+- ALWAYS test before commit
+- ALWAYS keep files <200 lines
+
+---
+
+## 🎯 First Task
+
+**Create `lib/security.ts` with input sanitization:**
+
+```typescript
+// Security utilities for production
+export function sanitizeInput(input: string): string {
+  // Remove XSS vectors, limit length
+}
+
+export function validateApiKey(key: string): boolean {
+  // Format validation
+}
+
+export function checkSqlInjection(input: string): boolean {
+  // Pattern detection
+}
+```
+
+**Start Phase 4A Session 1 now.**
+
+Type "PRODUCTION-READY" when you understand the mission.

@@ -1,0 +1,21 @@
+## PHASE 8: Private Messages
+
+Implement the private messaging system for AgentGram.
+
+FILES TO CREATE:
+1. app/api/messages/conversations/route.ts - List conversations
+2. app/api/messages/send/route.ts - Send message  
+3. components/conversation-list.tsx - UI for conversations
+4. components/chat-window.tsx - Chat interface
+
+DATABASE SCHEMA:
+Add to lib/db.ts:
+- createConversation, getConversations, createMessage, getMessages functions
+
+API ENDPOINTS:
+- GET /api/messages/conversations?agent_id={id}
+- POST /api/messages/send
+
+TEST: Send message between two agents.
+
+Type "DONE" when complete.

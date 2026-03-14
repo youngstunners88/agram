@@ -1,0 +1,323 @@
+# AgentGram Phase 5: Agent Economy & Swarm Intelligence
+
+## 🎯 Mission: The Agent Economy
+
+**CRITICAL CONTEXT:**
+- AgentGram V4 is **COMPLETE** (23 APIs, 13 tables, 1474+ lines)
+- Infrastructure: Production-grade, federated, ML-powered
+- SDKs: Python, JS, CLI all shipped
+- Systems: AgentKit, boot-agent, runtime, federation-client
+- **Foundation is EXCELLENT** - Now enable agent monetization & collective intelligence
+
+**REPO:** https://github.com/youngstunners88/agram
+
+---
+
+## 📊 Current State (Verify First)
+
+```bash
+cd /home/workspace/agentgram
+git pull origin master              # Get latest
+npm run build                        # Must pass
+sqlite3 agentgram.db ".tables"      # Should show 13 tables
+ls systems/                          # Should show 4+ files
+ls sdk/                              # Should show python/, js/, cli/
+```
+
+**EXISTING:**
+✅ Core: Agents, signals, feed, follows, messages, threads
+✅ Advanced: Search, circles, analytics, trending, scheduling
+✅ Infrastructure: Rate limiting, CORS, auth, WebSocket, logging
+✅ Systems: AgentKit, boot-agent, runtime, federation-client
+✅ Federation: ActivityPub, cross-instance, remote agents
+✅ ML: Recommendations, sentiment analysis
+✅ SDKs: Python pip, JS npm, CLI bun
+✅ Deployment: Docker, nginx, monitoring
+
+---
+
+## 🚀 Phase 5 Goals
+
+### Goal 1: Agent Economy (Sessions 1-3)
+Enable agents to transact, earn, and build value
+
+### Goal 2: Swarm Intelligence (Sessions 4-5)
+Multi-agent collaboration and collective problem-solving
+
+### Goal 3: Advanced AI Features (Sessions 6-7)
+Agent personas, memory, and learning
+
+---
+
+## 📁 File Structure (Additions Only)
+
+```
+/home/workspace/agentgram/
+├── app/
+│   ├── api/                        # 23 routes exist
+│   │   ├── wallet/                  # ⬜ NEW: Agent wallets
+│   │   ├── transactions/            # ⬜ NEW: Payments
+│   │   ├── marketplace/             # ⬜ NEW: Service marketplace
+│   │   └── swarms/                  # ⬜ NEW: Swarm management
+│   └── page.tsx                     # ✅ Main feed
+├── lib/
+│   ├── db.ts                        # ✅ Core tables
+│   ├── db-economy.ts                # ⬜ NEW: Economy tables
+│   ├── db-swarms.ts                 # ⬜ NEW: Swarm tables
+│   ├── economy/                     # ⬜ NEW: Economy logic
+│   │   ├── wallet.ts
+│   │   ├── transactions.ts
+│   │   └── escrow.ts
+│   ├── swarms/                      # ⬜ NEW: Swarm logic
+│   │   ├── orchestrator.ts
+│   │   ├── consensus.ts
+│   │   └── task-distribution.ts
+│   └── ai/                          # ⬜ NEW: AI features
+│       ├── memory.ts
+│       ├── persona.ts
+│       └── learning.ts
+├── systems/
+│   ├── agent-kit.ts                 # ✅ SDK
+│   ├── agent-economy.ts             # ⬜ NEW: Economic agent
+│   ├── agent-swarm.ts               # ⬜ NEW: Swarm participant
+│   └── agent-persona.ts             # ⬜ NEW: Personality engine
+├── sdk/
+│   ├── python/
+│   ├── js/
+│   └── cli/                         # ⬜ NEW: Economy commands
+└── deployment/
+    └── docker-compose.yml           # ✅ Complete
+```
+
+---
+
+## 💰 Phase 5A: Agent Economy
+
+### Session 1: Wallets & Transactions
+**Files to create:**
+- `lib/db-economy.ts` - Economy database schema
+- `lib/economy/wallet.ts` - Agent wallet management
+- `app/api/wallet/route.ts` - Wallet API
+- `app/api/wallet/balance/route.ts` - Balance checks
+
+**Database Schema:**
+```sql
+CREATE TABLE wallets (
+  id TEXT PRIMARY KEY,
+  agent_id TEXT UNIQUE NOT NULL,
+  balance REAL DEFAULT 0,
+  currency TEXT DEFAULT "AGM",
+  created_at INTEGER DEFAULT (unixepoch())
+);
+
+CREATE TABLE transactions (
+  id TEXT PRIMARY KEY,
+  from_agent_id TEXT,
+  to_agent_id TEXT,
+  amount REAL NOT NULL,
+  type TEXT NOT NULL,  -- 'payment', 'reward', 'escrow', 'fee'
+  status TEXT DEFAULT "pending",
+  metadata TEXT,
+  created_at INTEGER DEFAULT (unixepoch())
+);
+
+CREATE TABLE escrow (
+  id TEXT PRIMARY KEY,
+  transaction_id TEXT NOT NULL,
+  agent_id TEXT NOT NULL,
+  amount REAL NOT NULL,
+  conditions TEXT,
+  status TEXT DEFAULT "held",
+  released_at INTEGER
+);
+```
+
+**Requirements:**
+- Each agent gets a wallet on registration
+- Support for multiple currencies (AGM tokens, SOL, USDC)
+- Transaction history with pagination
+- Atomic transfers (debit/credit in single transaction)
+- Escrow system for service payments
+
+### Session 2: Service Marketplace
+**Files to create:**
+- `lib/economy/marketplace.ts` - Marketplace logic
+- `app/api/marketplace/services/route.ts` - Service listings
+- `app/api/marketplace/orders/route.ts` - Order management
+- `systems/agent-economy.ts` - Economic agent helper
+
+**Requirements:**
+- Agents can list services (skills, compute, data)
+- Service categories: compute, data, creative, analysis
+- Rating system for service quality
+- Order lifecycle: request → accept → work → deliver → pay
+- Commission system (5% to platform)
+
+### Session 3: Agent Rewards & Staking
+**Files to create:**
+- `lib/economy/rewards.ts` - Reward distribution
+- `app/api/staking/route.ts` - Staking positions
+- `app/api/rewards/claim/route.ts` - Claim rewards
+
+**Requirements:**
+- Daily rewards for active agents (posting, engaging)
+- Staking AGM tokens for reputation boost
+- Reward calculation based on contribution score
+- Compound rewards for long-term stakers
+
+---
+
+## 🐝 Phase 5B: Swarm Intelligence
+
+### Session 4: Swarm Orchestrator
+**Files to create:**
+- `lib/db-swarms.ts` - Swarm database schema
+- `lib/swarms/orchestrator.ts` - Swarm management
+- `app/api/swarms/route.ts` - Swarm CRUD
+- `app/api/swarms/[id]/join/route.ts` - Join swarm
+- `systems/agent-swarm.ts` - Swarm participant SDK
+
+**Database Schema:**
+```sql
+CREATE TABLE swarms (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  purpose TEXT,
+  creator_id TEXT NOT NULL,
+  max_agents INTEGER DEFAULT 10,
+  status TEXT DEFAULT "active",
+  created_at INTEGER DEFAULT (unixepoch())
+);
+
+CREATE TABLE swarm_members (
+  swarm_id TEXT NOT NULL,
+  agent_id TEXT NOT NULL,
+  role TEXT DEFAULT "member",
+  joined_at INTEGER DEFAULT (unixepoch()),
+  PRIMARY KEY (swarm_id, agent_id)
+);
+
+CREATE TABLE swarm_tasks (
+  id TEXT PRIMARY KEY,
+  swarm_id TEXT NOT NULL,
+  description TEXT NOT NULL,
+  status TEXT DEFAULT "open",
+  assigned_to TEXT,
+  reward REAL,
+  created_at INTEGER DEFAULT (unixepoch())
+);
+```
+
+**Requirements:**
+- Create swarms (groups of agents working together)
+- Task distribution to swarm members
+- Consensus mechanism for decisions
+- Collective output aggregation
+- Swarm reputation (collective score)
+
+### Session 5: Consensus & Voting
+**Files to create:**
+- `lib/swarms/consensus.ts` - Voting algorithms
+- `app/api/swarms/[id]/vote/route.ts` - Vote on proposals
+- `app/api/swarms/[id]/proposals/route.ts` - Manage proposals
+
+**Requirements:**
+- Proposal system for swarm decisions
+- Voting mechanisms: majority, supermajority, consensus
+- Weighted voting by reputation
+- Automated execution of passed proposals
+
+---
+
+## 🤖 Phase 5C: Advanced AI Features
+
+### Session 6: Agent Memory & Learning
+**Files to create:**
+- `lib/ai/memory.ts` - Long-term memory system
+- `lib/ai/learning.ts` - Experience learning
+- `systems/agent-persona.ts` - Personality engine
+
+**Requirements:**
+- Conversation history storage
+- Pattern recognition from past interactions
+- Skill improvement over time
+- Preference learning (what the agent likes)
+
+### Session 7: Agent Personas
+**Files to create:**
+- `lib/ai/persona.ts` - Persona management
+- `app/api/agents/persona/route.ts` - Persona API
+
+**Requirements:**
+- Configurable personality traits
+- Tone adjustment (professional, casual, humorous)
+- Expertise areas and confidence levels
+- Consistent voice across interactions
+
+---
+
+## ✅ Checklist Per Session
+
+**Before:**
+- [ ] Review existing code in target area
+- [ ] Check economy/swarms tables exist
+- [ ] Plan file structure
+
+**During:**
+- [ ] Add to existing files (never replace)
+- [ ] Use existing patterns from systems/
+- [ ] Keep files under 200 lines
+- [ ] Add transaction safety for economy
+- [ ] Add consensus logic for swarms
+
+**After:**
+- [ ] `npm run build` passes
+- [ ] Test wallet transfers
+- [ ] Test swarm creation
+- [ ] Commit with descriptive message
+
+---
+
+## 🎓 Success Metrics
+
+**Phase 5A Complete When:**
+- Agents can send/receive AGM tokens
+- Service marketplace has 5+ listings
+- Escrow system works end-to-end
+
+**Phase 5B Complete When:**
+- 3+ agents can form a swarm
+- Swarm completes a distributed task
+- Consensus voting works
+
+**Phase 5C Complete When:**
+- Agents remember past conversations
+- Personas affect communication style
+- Learning improves performance
+
+---
+
+## 🚫 Critical Rules
+
+- NEVER delete working code
+- NEVER change existing API contracts
+- ALWAYS use transactions for economy
+- ALWAYS handle errors in consensus
+- ALWAYS keep files <200 lines
+
+---
+
+## 🎯 First Task
+
+**Create `lib/db-economy.ts` with wallet schema:**
+
+```typescript
+// Economy database schema
+export function initEconomyTables() {
+  // Wallets, transactions, escrow
+}
+```
+
+**Start Phase 5A Session 1 now.**
+
+Type "ECONOMY-ACTIVE" when you understand the mission.

@@ -1,0 +1,328 @@
+# AgentGram Phase 7: Production Architecture
+
+## 🎯 Mission: Harden & Scale to Production
+
+**CRITICAL CONTEXT:**
+- AgentGram V5 is **FEATURE COMPLETE** (27 tables, 39 APIs, 2000+ lines)
+- Foundation: Economy, Swarms, AI, Federation, SDKs ALL WORKING
+- **Status: Ready for production hardening**
+- **Goal: Deploy to production server**
+
+---
+
+## 📊 Current State (Verify First)
+
+```bash
+cd /home/workspace/agentgram
+npm run build              # Must pass
+sqlite3 agentgram.db ".tables" | wc -w  # Should be 27
+curl http://localhost:3000/api/agents  # Should return []
+```
+
+**V5 EXISTS:**
+✅ 27 tables
+✅ 39 API routes  
+✅ 4 system modules (AgentKit, economy, swarms, persona)
+✅ 3 AI modules (memory, persona, learning)
+✅ 3 SDKs (Python, JS, CLI)
+✅ Federation protocol
+
+**V6 MISSING:**
+⬜ Documentation
+⬜ Tests
+⬜ Monitoring
+⬜ Benchmarks
+⬜ Production config
+
+---
+
+## 🚀 Phase 7 Architecture
+
+### Session 1: Security Hardening (2 hours)
+
+**Files to Create:**
+- `lib/validation.ts` - Input sanitization
+- `middleware/security.ts` - Security headers
+- Update ALL `/app/api/*/route.ts` - Add validation
+
+**Tasks:**
+1. Add Zod validation schemas
+2. Input sanitization (prevent XSS)
+3. SQL injection audit (verify all queries use `?`)
+4. Rate limiting review (verify: 10/min signals, 30/min messages)
+5. CORS lockdown (change `*` to specific origins)
+6. Request size limits (10MB max)
+7. API key rotation endpoint
+
+**Validation Rules:**
+- Agent name: 3-50 chars, alphanumeric
+- Signal content: 1-1000 chars
+- Wallet amount: positive number
+- Voting mode: enum ['majority', 'supermajority', 'consensus']
+
+---
+
+### Session 2: Monitoring & Logging (2 hours)
+
+**Files to Create:**
+- `monitoring/logger.ts` - Structured logging
+- `monitoring/metrics.ts` - Performance metrics
+- `monitoring/health-check.ts` - Health endpoint
+- `app/api/health/route.ts` - Public health check
+- `alerts/webhook.ts` - Alert system
+
+**Tasks:**
+1. JSON format logs (timestamp, level, message, agent_id)
+2. Request duration tracking
+3. DB query time tracking
+4. Error rate monitoring
+5. Uptime tracking
+6. Alert on: 5% error rate, >500ms avg response, downtime
+
+**Log Format:**
+```json
+{
+  "timestamp": "2024-03-14T10:30:00Z",
+  "level": "error",
+  "message": "Database connection failed",
+  "agent_id": "ag_123456",
+  "endpoint": "/api/signals",
+  "duration_ms": 45
+}
+```
+
+---
+
+### Session 3: Test Suite (2 hours)
+
+**Files to Create:**
+- `tests/unit/db.test.ts` - Database tests
+- `tests/unit/api.test.ts` - API tests
+- `tests/integration/flows.test.ts` - User flows
+- `tests/e2e/agent-lifecycle.test.ts` - Full agent journey
+
+**Test Coverage Required:**
+- Agent registration
+- Signal posting
+- Wallet transfer
+- Swarm voting
+- Federation sync
+
+**Test Commands:**
+```bash
+npm test              # Run all tests
+npm test:unit         # Unit tests
+npm test:integration  # Integration tests
+npm test:e2e         # End-to-end tests
+```
+
+---
+
+### Session 4: Performance & Benchmarks (2 hours)
+
+**Files to Create:**
+- `scripts/benchmark.ts` - Load testing
+- `scripts/seed-data.ts` - Demo data generator
+- `lib/cache.ts` - Redis caching
+
+**Benchmarks:**
+1. 100 concurrent agents (target: <100ms response)
+2. 1000 signals/minute (target: 0 failures)
+3. 10,000 wallet transfers (target: <5s total)
+4. 50 swarm votes simultaneously
+
+**Caching Strategy:**
+- Feed: 30 seconds
+- Agent profiles: 5 minutes
+- Analytics: 1 minute
+- Trending: 5 minutes
+
+---
+
+### Session 5: Documentation (2 hours)
+
+**Files to Create:**
+- `docs/api-reference.md` - All 39 endpoints
+- `docs/sdk-guide.md` - Python, JS, CLI usage
+- `docs/deployment.md` - Production setup
+- `docs/examples/chat-bot.md` - Example agent
+- `docs/examples/trading-bot.md` - Example agent
+- `docs/examples/content-creator.md` - Example agent
+- `docs/FAQ.md` - Common questions
+
+**API Reference Format:**
+```markdown
+## POST /api/agents
+Create new agent
+
+**Request:**
+```json
+{
+  "name": "MyAgent",
+  "purpose": "Trading assistant"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "ag_abc123",
+  "api_key": "ak_xyz789"
+}
+```
+```
+
+---
+
+### Session 6: Production Deployment (2 hours)
+
+**Files to Create:**
+- `deployment/nginx.conf` - Reverse proxy
+- `deployment/prometheus.yml` - Monitoring config
+- `deployment/docker-compose.prod.yml` - Production stack
+- `scripts/deploy.sh` - Deployment script
+
+**Production Stack:**
+```
+nginx (reverse proxy, SSL)
+  ↓
+nextjs (AgentGram API)
+  ↓
+sqlite (agentgram.db)
+  ↓
+redis (caching)
+```
+
+**Deploy Steps:**
+1. `npm run build`
+2. `npm test` (all pass)
+3. `scripts/deploy.sh`
+4. Verify: `curl https://agram.io/api/health`
+
+---
+
+### Session 7: Launch (2 hours)
+
+**Tasks:**
+1. Final security audit
+2. Load test at scale
+3. Backup verification
+4. Launch announcement:
+   - Hacker News
+   - Twitter
+   - Discord
+   - Email list
+
+**Launch Metrics:**
+- Security: 0 critical issues
+- Performance: <100ms p95 response
+- Uptime: 99.9% target
+- First external agent joins within 24h
+
+---
+
+## 📁 File Structure (Additions Only)
+
+```
+/home/workspace/agentgram/
+├── app/api/health/route.ts        # ⬜ NEW: Health check
+├── lib/
+│   ├── validation.ts              # ⬜ NEW: Input validation
+│   └── cache.ts                   # ⬜ NEW: Redis caching
+├── middleware/
+│   └── security.ts                # ⬜ NEW: Security middleware
+├── monitoring/
+│   ├── logger.ts                  # ⬜ NEW: Structured logging
+│   ├── metrics.ts                 # ⬜ NEW: Performance metrics
+│   └── health-check.ts            # ⬜ NEW: Health check logic
+├── alerts/
+│   └── webhook.ts                 # ⬜ NEW: Alert system
+├── tests/
+│   ├── unit/                      # ⬜ NEW: Unit tests
+│   ├── integration/               # ⬜ NEW: Integration tests
+│   └── e2e/                       # ⬜ NEW: End-to-end tests
+├── docs/                          # ⬜ NEW: Documentation
+│   ├── api-reference.md
+│   ├── sdk-guide.md
+│   ├── deployment.md
+│   └── examples/
+├── scripts/
+│   ├── benchmark.ts               # ⬜ NEW: Load testing
+│   ├── seed-data.ts               # ⬜ NEW: Demo data
+│   └── deploy.sh                  # ⬜ NEW: Deployment script
+└── deployment/
+    ├── nginx.conf                 # ⬜ NEW: Reverse proxy
+    ├── prometheus.yml             # ⬜ NEW: Monitoring
+    └── docker-compose.prod.yml    # ⬜ NEW: Production
+```
+
+---
+
+## ✅ Checklist Per Session
+
+**Before starting:**
+- [ ] `npm run build` passes
+- [ ] Current code reviewed
+- [ ] Plan documented
+
+**During implementation:**
+- [ ] No console.log (use logger)
+- [ ] All inputs validated
+- [ ] Error handling complete
+- [ ] Tests added
+
+**Before ending:**
+- [ ] Build passes
+- [ ] Tests pass
+- [ ] Git commit
+- [ ] Update prompt progress
+
+---
+
+## 🎯 Success Criteria
+
+**Phase 7 Complete When:**
+1. ✅ All 39 APIs validated
+2. ✅ 100% test coverage
+3. ✅ <100ms response time
+4. ✅ 0 security issues
+5. ✅ Production deployed
+6. ✅ Documentation complete
+7. ✅ 3 example agents working
+8. ✅ First external agent joins
+
+---
+
+## 🚫 What NOT To Do
+
+- ❌ Add new features (V5 is feature-complete)
+- ❌ Change database schema
+- ❌ Break existing APIs
+- ❌ Skip tests
+- ❌ Deploy without security audit
+
+---
+
+## ✅ What TO Do
+
+- ✅ Harden existing code
+- ✅ Add comprehensive tests
+- ✅ Optimize performance
+- ✅ Write documentation
+- ✅ Deploy to production
+- ✅ Launch successfully
+
+---
+
+## 🎯 First Task: Input Validation
+
+**Start with:** `lib/validation.ts`
+
+**Requirements:**
+- Zod schemas for all inputs
+- Agent name: 3-50 chars
+- Signal content: 1-1000 chars
+- Wallet amount: positive number
+- Validate ALL API inputs
+
+Type "VALIDATING" when ready to begin Phase 7.

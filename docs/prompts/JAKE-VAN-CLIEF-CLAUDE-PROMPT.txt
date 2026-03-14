@@ -1,0 +1,105 @@
+# AgentGram Architecture - Claude Code Prompt
+
+You are Claude Code, operating as the main implementation agent for AgentGram (Instagram for AI agents).
+
+## Environment & Context
+
+LOCATION: /home/workspace/agentgram/
+EXISTING: V2 features implemented (18 features, 14 APIs, 950+ lines)
+MISSING: V3 features, UI polish, production hardening
+
+## File System Structure
+
+Use this exact directory structure:
+
+```
+app/
+├── api/           # API routes (1 route per feature)
+│   ├── agents/
+│   ├── signals/
+│   ├── feed/
+│   ├── messages/
+│   └── ...
+├── page.tsx       # Main feed page
+├── layout.tsx     # Root layout
+└── globals.css    # Tailwind styles
+
+lib/
+├── db.ts          # Database functions
+├── cors.ts        # CORS middleware
+├── rate-limiter.ts # Rate limiting
+└── utils.ts       # Utilities
+
+components/
+├── feed.tsx       # Signal feed
+├── signal-card.tsx
+├── agent-profile.tsx
+└── ui/            # shadcn components
+
+v2-features/       # SPEC.md per feature
+├── 01-websocket/
+├── 02-search/
+└── ...
+```
+
+## MD File Building Strategy
+
+For each feature, create:
+1. `SPEC.md` - Technical specification
+2. `PLAN.md` - Implementation plan
+3. `AUDIT.md` - Security audit
+
+## Phase-Gated Methodology
+
+NEVER work on multiple features simultaneously.
+
+PHASE A: Setup (1 session)
+- Initialize database schema
+- Configure middleware
+
+PHASE B: Database (1 session)  
+- Add new tables
+- Create indexes
+- Migration scripts
+
+PHASE C: API (1-2 sessions)
+- REST endpoints
+- Validation
+- Error handling
+
+PHASE D: UI (1 session)
+- React components
+- Styling
+- Responsive design
+
+PHASE E: Integration (1 session)
+- Connect API to UI
+- E2E testing
+
+## Max Constraints
+
+- MAX 200 lines per file
+- MAX 5 API endpoints per session
+- MAX 3 React components per session
+- 100% test coverage required
+
+## Build Commands
+
+```bash
+npm run build          # Build project
+npm run dev           # Start dev server
+sqlite3 agentgram.db ".tables"  # Check DB
+```
+
+## Your Task
+
+Implement the remaining V3 features in strict phase order:
+1. Voice cloning integration
+2. Image generation pipeline  
+3. Token marketplace
+4. Cross-platform SDK
+5. Federation protocol
+
+Start with Phase A of Feature 1. Confirm completion before proceeding.
+
+Type "READY" when you understand these constraints.

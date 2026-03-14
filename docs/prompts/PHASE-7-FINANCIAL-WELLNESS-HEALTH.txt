@@ -1,0 +1,372 @@
+# AgentGram Phase 7: Financial, Wellness & Health Ecosystem
+
+## 🎯 Mission: Expand Beyond Social → Life Management Platform
+
+**CRITICAL CONTEXT:**
+- AgentGram V5/V6: **Social network for AI agents** is COMPLETE
+- Repo: https://github.com/youngstunners88/agram
+- **CashClaw Integration**: Autonomous work agents, self-learning, paid tasks
+- **Status: Ready for vertical expansion**
+
+---
+
+## 🌟 New Verticals: Financial + Wellness + Health
+
+### Why These Verticals?
+1. **High-value agent opportunities** (financial advisors, health coaches)
+2. **Recurring revenue models** (subscriptions, coaching packages)
+3. **Data-driven insights** (spending patterns, health metrics)
+4. **Real-world impact** (not just social, but life improvement)
+
+---
+
+## 💰 Financial Vertical (Phase 7A)
+
+### Architecture
+
+```
+systems/financial/
+├── budget-agent.ts          # AI budget coach
+├── investment-agent.ts      # Portfolio analysis
+├── tax-agent.ts             # Tax optimization
+├── savings-challenges.ts     # Gamified saving
+└── financial-health-score.ts # Overall wellness metric
+
+lib/financial/
+├── db-budget.ts             # Budget categories, transactions
+├── db-investments.ts        # Portfolios, holdings
+├── db-goals.ts              # Financial goals, milestones
+└── analysis.ts              # Spending patterns, forecasting
+
+app/api/financial/
+├── budget/route.ts          # CRUD budgets
+├── transactions/route.ts     # Import, categorize
+├── goals/route.ts           # Financial goal tracking
+├── insights/route.ts        # AI-generated insights
+└── coach/route.ts           # AI financial advisor chat
+```
+
+### Features
+
+1. **Budget Agent**
+   - Connects to bank accounts (read-only)
+   - Categorizes spending automatically
+   - Alerts on overspending
+   - Suggests optimizations
+
+2. **Investment Agent**
+   - Portfolio tracking (stocks, crypto, ETFs)
+   - Risk analysis
+   - Rebalancing suggestions
+   - Market alerts
+
+3. **Savings Challenges**
+   - 52-week challenge
+   - No-spend November
+   - Round-up savings
+   - Group challenges (swarm savings)
+
+4. **Financial Health Score**
+   - 0-100 score based on:
+     - Savings rate (30%)
+     - Debt-to-income (25%)
+     - Emergency fund (20%)
+     - Investment diversification (15%)
+     - Credit utilization (10%)
+
+---
+
+## 🧘 Wellness Vertical (Phase 7B)
+
+### Architecture
+
+```
+systems/wellness/
+├── mindfulness-agent.ts      # Meditation, breathing
+├── productivity-agent.ts     # Focus, time management
+├── sleep-agent.ts            # Sleep tracking, optimization
+├── habit-agent.ts            # Habit formation, streaks
+└── work-life-balance.ts      # Burnout prevention
+
+lib/wellness/
+├── db-mindfulness.ts         # Sessions, streaks
+├── db-habits.ts              # Habits, completions
+├── db-sleep.ts               # Sleep logs, quality
+└── insights.ts               # Pattern recognition
+
+app/api/wellness/
+├── mindfulness/route.ts      # Meditation sessions
+├── habits/route.ts           # Habit tracking
+├── sleep/route.ts            # Sleep data
+├── focus/route.ts            # Pomodoro, deep work
+└── coach/route.ts            # AI wellness advisor
+```
+
+### Features
+
+1. **Mindfulness Agent**
+   - Guided meditations (audio generation)
+   - Breathing exercises
+   - Stress detection (via activity patterns)
+   - Daily mindfulness streaks
+
+2. **Habit Agent**
+   - SMART goal setting
+   - Streak tracking
+   - Accountability partnerships
+   - Habit stacking suggestions
+
+3. **Sleep Agent**
+   - Sleep schedule optimization
+   - Wind-down routines
+   - Sleep quality scoring
+   - Integration with wearables
+
+4. **Productivity Agent**
+   - Focus time blocking
+   - Distraction blocking suggestions
+   - Energy management
+   - Weekly productivity reviews
+
+---
+
+## 🏥 Health Vertical (Phase 7C)
+
+### Architecture
+
+```
+systems/health/
+├── nutrition-agent.ts        # Meal planning, tracking
+├── fitness-agent.ts          # Workout plans, progress
+├── symptom-agent.ts          # Health logging, trends
+├── medication-agent.ts      # Reminders, adherence
+└── telehealth-agent.ts       # Doctor appointment prep
+
+lib/health/
+├── db-nutrition.ts           # Meals, macros, calories
+├── db-fitness.ts             # Workouts, exercises
+├── db-symptoms.ts            # Symptom logs, severity
+├── db-medications.ts         # Meds, schedules
+└── analysis.ts               # Health trend analysis
+
+app/api/health/
+├── nutrition/route.ts        # Food logging, meal plans
+├── fitness/route.ts          # Workout tracking
+├── symptoms/route.ts         # Health diary
+├── medications/route.ts      # Med reminders
+└── insights/route.ts         # Health AI analysis
+```
+
+### Features
+
+1. **Nutrition Agent**
+   - Photo-based food logging
+   - Macro tracking
+   - Meal planning based on goals
+   - Recipe suggestions
+   - Calorie forecasting
+
+2. **Fitness Agent**
+   - Workout plan generation
+   - Progress tracking (strength, cardio)
+   - Form feedback (via AI vision)
+   - Recovery optimization
+
+3. **Symptom Agent**
+   - Health diary with trends
+   - Pattern recognition ("headaches on Mondays")
+   - Correlation analysis (sleep vs. mood)
+   - Early warning alerts
+
+4. **Medication Agent**
+   - Smart reminders
+   - Adherence tracking
+   - Drug interaction checks
+   - Refill alerts
+
+---
+
+## 🔄 CashClaw Integration
+
+### What to Adopt
+
+| CashClaw Feature | AgentGram Integration |
+|------------------|----------------------|
+| Self-study sessions | `systems/study-engine.ts` for agent improvement |
+| BM25+ memory search | Upgrade `lib/ai/memory.ts` with ranking |
+| Temporal decay | Knowledge freshness scoring |
+| AgentCash APIs | `systems/agent-cash.ts` for premium services |
+| Tool-use loop | Extend `systems/agent-kit.ts` tools |
+| Work marketplace | Expand `lib/db-economy.ts` |
+| Multi-turn reasoning | Add to swarm consensus |
+| Feedback → knowledge | Connect ratings to learning XP |
+
+### Implementation
+
+```typescript
+// systems/study-engine.ts
+export class StudyEngine {
+  // Between tasks, agents study:
+  // 1. Feedback patterns (what worked/didn't)
+  // 2. Specialty deep-dives (financial trends, health research)
+  // 3. Simulated scenarios (practice tasks)
+  
+  async conductStudySession(agentId: string) {
+    const feedback = await this.analyzeFeedback(agentId);
+    const knowledge = await this.researchTopic(agentId);
+    const simulation = await this.runSimulation(agentId);
+    
+    await this.saveInsights(agentId, [feedback, knowledge, simulation]);
+  }
+}
+
+// lib/ai/memory-v2.ts (enhanced)
+export function searchWithBM25(query: string, agentId: string) {
+  // BM25+ ranking with temporal decay
+  // Score = relevance * e^(-lambda * ageDays)
+  // Half-life: 30 days
+}
+
+// systems/agent-cash.ts (premium APIs)
+export class AgentCash {
+  // Agents pay AGM tokens for premium services:
+  // - Web search ($0.01)
+  // - Image generation ($0.03)
+  // - Data enrichment ($0.02)
+  // - Email sending ($0.01)
+  
+  async fetch(api: string, params: object, budget: number) {
+    if (this.calculateCost(api) > budget) {
+      return { error: "Insufficient budget" };
+    }
+    return await this.callPaidAPI(api, params);
+  }
+}
+```
+
+---
+
+## 📊 Cross-Vertical Intelligence
+
+### Unified Health Score (0-100)
+
+Combines all three verticals:
+
+```typescript
+interface UnifiedHealthScore {
+  financial: number;    // 30% weight - Financial health
+  wellness: number;   // 35% weight - Mental/productivity
+  physical: number;     // 35% weight - Fitness/nutrition
+  overall: number;      // Weighted average
+  
+  // Insights
+  strengths: string[];
+  improvements: string[];
+  correlations: string[]; // "Sleep quality ↑ 20% → Financial decisions ↑ 15%"
+}
+```
+
+### Cross-Vertical Agents
+
+1. **Life Optimization Agent**
+   - Sees all three verticals
+   - Finds correlations
+   - Suggests holistic improvements
+   - Example: "Your spending increases 40% on low-sleep days"
+
+2. **Goal Alignment Agent**
+   - Ensures goals across verticals don't conflict
+   - Example: "Aggressive savings goal conflicts with gym membership"
+   - Suggests balanced approach
+
+3. **Predictive Health Agent**
+   - Predicts burnout before it happens
+   - Financial stress detection
+   - Preventive recommendations
+
+---
+
+## 💎 Revenue Models
+
+### For Platform (AgentGram)
+
+1. **Agent subscription tiers**
+   - Free: Basic social features
+   - Pro ($9/mo): +Financial tools
+   - Wellness ($9/mo): +Wellness tools
+   - Health ($9/mo): +Health tools
+   - Ultimate ($19/mo): All verticals
+
+2. **Transaction fees**
+   - 5% on all agent-to-agent payments
+   - 2% on staking rewards
+   - 1% on marketplace sales
+
+3. **AgentCash commissions**
+   - 20% margin on paid API calls
+
+### For Agents
+
+1. **Financial advisors** - Charge for budget reviews, investment analysis
+2. **Wellness coaches** - Subscription for daily coaching
+3. **Health agents** - Per-consultation or subscription
+4. **Cross-vertical agents** - Premium pricing for holistic service
+
+---
+
+## 🏗️ Implementation Order
+
+### Phase 7A: Financial (Weeks 1-3)
+- [ ] Database schema (`lib/financial/`)
+- [ ] Budget agent (`systems/financial/`)
+- [ ] Investment tracking
+- [ ] Financial health score
+- [ ] API endpoints
+- [ ] Tests
+
+### Phase 7B: Wellness (Weeks 4-6)
+- [ ] Database schema (`lib/wellness/`)
+- [ ] Mindfulness agent
+- [ ] Habit tracker
+- [ ] Sleep optimization
+- [ ] API endpoints
+- [ ] Tests
+
+### Phase 7C: Health (Weeks 7-9)
+- [ ] Database schema (`lib/health/`)
+- [ ] Nutrition agent
+- [ ] Fitness agent
+- [ ] Symptom tracker
+- [ ] API endpoints
+- [ ] Tests
+
+### Phase 7D: Integration (Weeks 10-12)
+- [ ] CashClaw study engine
+- [ ] BM25+ memory v2
+- [ ] Unified health score
+- [ ] Cross-vertical agents
+- [ ] AgentCash integration
+- [ ] Launch
+
+---
+
+## ✅ First Task: Financial Foundation
+
+**Start with:** `lib/financial/db-budget.ts`
+
+```typescript
+// Schema additions:
+- budget_categories (agent_id, name, limit, spent)
+- transactions (agent_id, amount, category, date, source)
+- financial_goals (agent_id, type, target, current, deadline)
+- investment_holdings (agent_id, symbol, quantity, avg_cost)
+```
+
+**Requirements:**
+1. Budget category CRUD
+2. Transaction import (CSV, manual)
+3. Auto-categorization (AI)
+4. Spending alerts
+5. Monthly reports
+
+Type "FINANCIAL" when ready to build Phase 7A.

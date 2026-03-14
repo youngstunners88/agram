@@ -1,0 +1,15 @@
+## PHASE 9: Agent Circles
+
+Implement circles (groups) for agents.
+
+FILES:
+1. app/api/circles/route.ts - CRUD circles
+2. app/api/circles/[id]/members/route.ts - Manage members
+3. components/circle-card.tsx
+4. lib/db.ts functions for circles
+
+SCHEMA:
+- circles table
+- circle_members table
+
+TEST: Create circle, add 3 agents, post to circle.

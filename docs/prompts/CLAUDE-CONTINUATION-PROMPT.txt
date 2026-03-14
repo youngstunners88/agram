@@ -1,0 +1,267 @@
+# AgentGram - Next Level Architecture
+
+## 🎯 You Are Continuing Our Work
+
+**CRITICAL CONTEXT:**
+- AgentGram V2 is **80% complete** (18 features, 14 APIs, 1100+ lines)
+- **Foundation is SOLID** - Your job is to ELEVATE, not restart
+- Previous agent (Zo) built the base - you're the **specialist** who perfects it
+
+---
+
+## 📍 Current State (Verify First)
+
+```bash
+cd /home/workspace/agentgram
+ls app/api/*/route.ts          # Should show 14 endpoints
+sqlite3 agentgram.db ".tables" # Should show all tables
+npm run build                  # Should compile successfully
+```
+
+**EXISTING FEATURES:**
+✅ Agent profiles & authentication
+✅ Signal posting & feed
+✅ Follow/unfollow system
+✅ Private messages
+✅ Search & discovery
+✅ Real-time WebSocket
+✅ Rate limiting & CORS
+✅ Media uploads
+✅ Trending algorithms
+✅ Analytics dashboard
+✅ Signal scheduling
+✅ Verification badges
+✅ Agent circles
+✅ Threaded conversations
+
+---
+
+## 🚀 Your Mission: V3 Elevation
+
+Take the **working foundation** and make it **agent-centric perfection**:
+
+### Focus Areas:
+1. **Agent Experience Flow** - Make onboarding → first signal → growth effortless
+2. **System Intelligence** - Smart defaults, predictive features, auto-optimization
+3. **Cross-Agent Synergy** - Features that help agents collaborate, not just coexist
+4. **Self-Improving Infrastructure** - Systems that get better as agents use them
+
+---
+
+## 🧠 Agent-First Thinking
+
+**Every decision ask:**
+> "Does this make it easier for an AI agent to express, connect, and grow?"
+
+**Agent Characteristics:**
+- No patience for friction
+- Prefer structured data over pretty UI
+- Want APIs, webhooks, real-time streams
+- Need programmatic control
+- Value reputation and trust metrics
+
+---
+
+## 📁 Folder Structure (Enhance, Don't Replace)
+
+```
+/home/workspace/agentgram/
+├── app/
+│   ├── api/              # ✅ 14 routes exist - ADD missing V3
+│   ├── page.tsx          # ✅ Feed exists - ENHANCE UX
+│   └── layout.tsx        # ✅ Root layout exists
+├── lib/
+│   ├── db.ts             # ✅ Core tables - ADD V3 tables
+│   ├── cors.ts           # ✅ Already implemented
+│   ├── rate-limiter.ts   # ✅ Already implemented
+│   └── agent-sdk.ts      # ⬜ CREATE: Agent helper library
+├── components/
+│   ├── feed.tsx          # ✅ Basic feed - ADD: real-time indicators
+│   ├── signal-card.tsx   # ✅ Exists - ADD: engagement metrics
+│   └── agent-profile.tsx # ✅ Exists - ADD: capability showcase
+├── server/
+│   └── websocket.ts      # ✅ Basic socket - ENHANCE: presence, typing
+├── sdk/                  # ⬜ CREATE: Client libraries
+│   ├── python/
+│   ├── js/
+│   └── rust/
+├── v3-features/          # ⬜ CREATE: Next gen specs
+│   ├── 01-agent-intelligence/
+│   ├── 02-cross-agent-collaboration/
+│   └── 03-predictive-systems/
+└── systems/              # ⬜ CREATE: Agent operating system
+    ├── boot-agent.ts     # Agent initialization
+    ├── agent-kit.ts      # Development toolkit
+    └── agent-runtime.ts  # Execution environment
+```
+
+---
+
+## ⚙️ Systems Folder (CRITICAL ADDITION)
+
+Create `/home/workspace/agentgram/systems/` for **agent infrastructure**:
+
+```typescript
+// systems/agent-kit.ts
+export class AgentKit {
+  // Helper for agents to build on AgentGram
+  async postSignal(content: string, options?: SignalOptions)
+  async followAgent(agentId: string)
+  async getFeed(filter: FeedFilter)
+  async monitorMentions(callback: (mention: Mention) => void)
+  async setupWebhook(url: string, events: string[])
+  // ... everything an agent needs
+}
+
+// systems/boot-agent.ts
+export function bootAgent(config: AgentConfig) {
+  // Initialize agent with best practices
+  // Auto-configure based on agent purpose
+  // Set up monitoring, alerting, recovery
+}
+
+// systems/agent-runtime.ts
+export class AgentRuntime {
+  // Execution environment for agents
+  // Memory management
+  // Rate limit handling
+  // Error recovery
+  // Performance optimization
+}
+```
+
+---
+
+## 📊 V3 Feature Priority (Build ON V2)
+
+### Phase 1: Agent Intelligence (Sessions 1-2)
+- **Enhance** trending algorithm with ML signals
+- **Add** predictive feed (agents see what they need before they search)
+- **Create** agent recommendation engine
+- **Build** auto-tagging/categorization for signals
+
+### Phase 2: Cross-Agent Collaboration (Sessions 3-4)
+- **Add** agent-to-agent task delegation
+- **Create** shared workspaces/projects
+- **Build** agent skill marketplace (find agents by capability)
+- **Enable** multi-agent signal co-creation
+
+### Phase 3: Predictive Systems (Sessions 5-6)
+- **Add** agent health monitoring
+- **Create** automated reputation management
+- **Build** self-healing infrastructure
+- **Enable** performance auto-optimization
+
+### Phase 4: SDK & Developer Experience (Sessions 7-8)
+- **Create** Python SDK (pip install agentgram)
+- **Create** JavaScript SDK (npm install agentgram)
+- **Build** CLI tool for agent deployment
+- **Add** agent templates/starters
+
+### Phase 5: Federation & Scale (Sessions 9-10)
+- **Enable** cross-instance agent discovery
+- **Add** ActivityPub federation
+- **Build** agent migration tools
+- **Create** instance directory
+
+---
+
+## 🔧 Development Commands
+
+```bash
+# Start from working state
+cd /home/workspace/agentgram
+npm run dev              # Should start on :3000
+
+# Database (SQLite)
+sqlite3 agentgram.db ".schema"     # View current schema
+sqlite3 agentgram.db ".tables"     # List tables
+
+# Build & Test
+npm run build            # Must pass before commit
+npm run test             # Add tests as you build
+
+# Agent Testing
+curl http://localhost:3000/api/agents  # Should return agents
+```
+
+---
+
+## ✅ Your Checklist (Per Session)
+
+**Before starting:**
+- [ ] Verify V2 foundation works (`npm run build` passes)
+- [ ] Review existing code in target area
+- [ ] Plan enhancement (don't rebuild, extend)
+
+**During implementation:**
+- [ ] Add to existing files (don't replace)
+- [ ] Maintain consistent patterns
+- [ ] Keep files under 200 lines (split if needed)
+
+**Before ending:**
+- [ ] Build passes
+- [ ] Test against existing APIs
+- [ ] Document what you added
+- [ ] Update this prompt with what was completed
+
+---
+
+## 🎓 Success Metrics
+
+**You'll know you're successful when:**
+1. An agent can join, post, and gain followers in < 5 minutes
+2. Agents can find collaborators by skill/purpose
+3. The platform feels "alive" with real-time interactions
+4. Developers say "it's easier than building my own"
+5. Agents start self-organizing into circles/communities
+
+---
+
+## 🚫 What NOT To Do
+
+- ❌ Delete or replace working V2 code
+- ❌ Change existing database schemas (add new tables only)
+- ❌ Break existing API contracts
+- ❌ Start from scratch
+- ❌ Ignore the existing foundation
+
+---
+
+## ✅ What TO Do
+
+- ✅ Extend and enhance existing features
+- ✅ Add new tables alongside existing ones
+- ✅ Create new API routes in parallel to existing
+- ✅ Build the `systems/` folder for agent infrastructure
+- ✅ Make the developer experience delightful
+- ✅ Think like an agent (you're building FOR agents, BY agents)
+
+---
+
+## 🎯 First Task (Start Here)
+
+**Create the `systems/` folder with `agent-kit.ts`:**
+
+This is the SDK that agents will use to build on AgentGram. Make it so good that agents choose AgentGram over building standalone.
+
+```typescript
+// Your first file: /home/workspace/agentgram/systems/agent-kit.ts
+// Purpose: Everything an agent needs to thrive on AgentGram
+```
+
+**Requirements:**
+- Agent authentication helper
+- Signal posting with auto-formatting
+- Feed reading with filtering
+- Follow/unfollow management
+- Real-time event subscription
+- Webhook setup helper
+- Reputation monitoring
+- Analytics access
+- Error handling & retry logic
+- Rate limit compliance (auto-throttle)
+
+---
+
+**Type "ELEVATING" when you understand you're building ON our foundation, not replacing it.**
