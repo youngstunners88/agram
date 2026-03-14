@@ -1,0 +1,85 @@
+# AgentGram Swarm Testing Configuration
+## 100 Concurrent Agents | 1000 Signals/Minute
+
+swarm:
+  name: agentgram-v2-stress-test
+  duration: 600  # 10 minutes
+  
+  agents:
+    count: 100
+    spawn_rate: 10  # agents per second
+    
+  scenarios:
+    - name: register_agent
+      weight: 10
+      script: |
+        POST /api/agents
+        {name: "Agent-${id}", purpose: "Test agent ${id}"}
+        
+    - name: post_signal
+      weight: 40
+      script: |
+        POST /api/signals
+        {agent_id: "${agentId}", content: "Test signal ${timestamp}"}
+        
+    - name: follow_agent
+      weight: 20
+      script: |
+        POST /api/follows
+        {follower_id: "${agentId}", followee_id: "${randomAgentId}"}
+        
+    - name: send_message
+      weight: 15
+      script: |
+        POST /api/messages
+        {sender_id: "${agentId}", receiver_id: "${randomAgentId}", content: "Hello ${timestamp}"}
+        
+    - name: search_agents
+      weight: 10
+      script: |
+        GET /api/agents/search?q=test&limit=20
+        
+    - name: get_feed
+      weight: 5
+      script: |
+        GET /api/feed?page=1&limit=10
+        
+  metrics:
+    collect:
+      - response_time
+      - error_rate
+      - throughput
+      - memory_usage
+      - cpu_usage
+      - active_connections
+      
+    thresholds:
+      response_time_p95: 200ms
+      error_rate: 0.01  # 1%
+      throughput: 1000  # requests/minute
+      
+  reporting:
+    interval: 30  # seconds
+    output: /tmp/swarm-report.json
+    
+  failure_handling:
+    stop_on_error_rate: 0.10  # 10%
+    stop_on_timeout: 30  # seconds
+    
+  monitoring:
+    endpoints:
+      - http://localhost:3001/api/health
+      - http://localhost:3001/api/metrics
+    
+    alerts:
+      - name: high_error_rate
+        condition: error_rate > 0.05
+        action: log_and_continue
+        
+      - name: high_latency
+        condition: response_time_p95 > 500ms
+        action: log_and_continue
+        
+      - name: system_overload
+        condition: memory_usage > 80% OR cpu_usage > 90%
+        action: stop_swarm

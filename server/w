@@ -1,0 +1,17 @@
+[truncated]
+, (socket) => {
+    consol
+[truncated]
+icate']);
+  });
+}
+);
+
+const PORT = pro
+[truncated]
+ console.log(`We
+[truncated]
+ at http://localhost:${PORT}`);
+});
+EOF
+echo "✅ WebSocket server: $(wc -l < server/websocket.ts) lines"

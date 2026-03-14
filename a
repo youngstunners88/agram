@@ -1,0 +1,8 @@
+[truncated]
+export async functi
+[truncated]
+son({ error: "Failed to fetch notifications" }, { status: 500 });
+  }
+}
+EOF
+echo "✅ Notifications API: $(wc -l < app/api/notifications/route.ts) lines"
