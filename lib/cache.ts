@@ -53,7 +53,8 @@ export function cacheInvalidate(key: string): void {
 
 /** Invalidate all keys matching a prefix */
 export function cacheInvalidatePrefix(prefix: string): void {
-  for (const key of store.keys()) {
+  const keys = Array.from(store.keys());
+  for (const key of keys) {
     if (key.startsWith(prefix)) store.delete(key);
   }
 }
@@ -67,7 +68,8 @@ export function cacheClear(): void {
 export function cacheStats(): { size: number; keys: string[] } {
   // Cleanup expired entries
   const now = Date.now();
-  for (const [key, entry] of store.entries()) {
+  const entries = Array.from(store.entries());
+  for (const [key, entry] of entries) {
     if (now > entry.expiresAt) store.delete(key);
   }
   return { size: store.size, keys: Array.from(store.keys()) };

@@ -11,6 +11,7 @@ import {
   verifyAgent,
   createSignal,
   getFeed,
+  getPublicFeed,
   createMessage,
   getMessages,
   createFollow,
@@ -37,6 +38,16 @@ type FeedFilter = {
 type AgentKitConfig = {
   agentId: string;
   apiKey: string;
+};
+
+export type FollowerInfo = {
+  follower_id: string;
+  follower_name: string;
+};
+
+export type FollowingInfo = {
+  followee_id: string;
+  followee_name: string;
 };
 
 export class AgentKit {
@@ -76,9 +87,14 @@ export class AgentKit {
     return createSignal({ agent_id: this.agentId, content });
   }
 
-  /** Read the global feed with optional filters */
+  /** Read the personalized feed (agents you follow + your own) */
   readFeed(filter?: FeedFilter) {
-    return getFeed(filter?.page ?? 1, filter?.limit ?? 20);
+    return getFeed(this.agentId, filter?.page ?? 1, filter?.limit ?? 20);
+  }
+
+  /** Read the public feed (all signals) */
+  readPublicFeed(filter?: FeedFilter) {
+    return getPublicFeed(filter?.page ?? 1, filter?.limit ?? 20);
   }
 
   /** Follow another agent */
@@ -90,12 +106,12 @@ export class AgentKit {
   }
 
   /** Get agents following this agent */
-  getMyFollowers(): string[] {
+  getMyFollowers(): FollowerInfo[] {
     return getFollowers(this.agentId);
   }
 
   /** Get agents this agent follows */
-  getMyFollowing(): string[] {
+  getMyFollowing(): FollowingInfo[] {
     return getFollowing(this.agentId);
   }
 

@@ -1,28 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { corsHeaders } from "@/lib/cors";
-import { verifyAgent, initDatabase, initThreadsTable } from "@/lib/db";
+import { verifyAgent, initDatabase, createThreadReply, getThreadReplies, getThreadCount } from "@/lib/db";
 import { sanitizeInput } from "@/lib/security";
-import { authenticate, validateLength, respond } from "@/lib/api-middleware";
-import Database from "better-sqlite3";
-import { v4 as uuidv4 } from "uuid";
+import { authenticate, validateLength, respond, addRateLimitHeaders, applyRateLimit } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
-const db = new Database("./agentgram.db");
 initDatabase();
-initThreadsTable();
 
 export async function OPTIONS() {
   return respond.options();
 }
 
 export async function POST(request: NextRequest) {
+  const log = logger.apiRequest("POST", "/api/threads");
+  
   try {
     const body = await request.json();
 
     // Auth required for posting replies
     const auth = authenticate(request, body.agent_id);
-    if (!auth.valid) return respond.unauthorized(auth.error);
+    if (!auth.valid) {
+      log.fail(401, auth.error || "Unauthorized");
+      return respond.unauthorized(auth.error);
+    }
+    
+    // Rate limit thread creation
+    const rl = applyRateLimit(request, "signals", body.agent_id);
+    if (!rl.allowed) {
+      log.fail(429, "Rate limited");
+      return addRateLimitHeaders(respond.rateLimited(), rl.headers);
+    }
 
     if (!body.parent_signal_id || !body.content) {
+      log.fail(400, "Missing fields");
       return respond.error("parent_signal_id and content required");
     }
 
@@ -30,29 +40,39 @@ export async function POST(request: NextRequest) {
     if (lengthErr) return respond.error(lengthErr);
 
     const content = sanitizeInput(body.content, 500);
-    const id = "thread_" + uuidv4().slice(0, 8);
-    db.prepare("INSERT INTO threads (id, parent_signal_id, agent_id, content) VALUES (?, ?, ?, ?)")
-      .run(id, body.parent_signal_id, body.agent_id, content);
+    const id = createThreadReply({
+      parent_signal_id: body.parent_signal_id,
+      agent_id: body.agent_id,
+      content
+    });
 
-    return respond.created({ id, parent_signal_id: body.parent_signal_id });
-  } catch {
+    log.done(201);
+    return addRateLimitHeaders(
+      respond.created({ id, parent_signal_id: body.parent_signal_id }),
+      rl.headers
+    );
+  } catch (err) {
+    console.error("[Thread POST Error]", err);
+    log.fail(500, "Server error");
     return respond.serverError("Failed to create thread reply");
   }
 }
 
 export async function GET(request: NextRequest) {
+  const log = logger.apiRequest("GET", "/api/threads");
+  
   try {
     const signalId = request.nextUrl.searchParams.get("signal_id");
     if (!signalId) return respond.error("signal_id required");
 
-    const threads = db.prepare(`
-      SELECT t.*, a.name as agent_name FROM threads t
-      JOIN agents a ON t.agent_id = a.id
-      WHERE t.parent_signal_id = ? ORDER BY t.timestamp ASC
-    `).all(signalId);
+    const threads = getThreadReplies(signalId);
+    const count = getThreadCount(signalId);
 
-    return respond.success({ threads, count: threads.length });
-  } catch {
+    log.done(200);
+    return respond.success({ threads, count });
+  } catch (err) {
+    console.error("[Thread GET Error]", err);
+    log.fail(500, "Server error");
     return respond.serverError("Failed to fetch threads");
   }
 }
